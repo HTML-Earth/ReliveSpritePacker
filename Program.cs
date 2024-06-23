@@ -60,32 +60,40 @@ internal class Program
         // ASSET TOOL META.JSON
         using (var meta = JsonDocument.Parse(File.ReadAllText(dir.FullName + "/meta.json")))
         {
-            var root = meta.RootElement;
-            
-            var mainHeight = root.GetProperty("size").GetProperty("h").GetInt16();
-            var mainWidth = root.GetProperty("size").GetProperty("w").GetInt16();
-            var mainOffsetX = root.GetProperty("offset").GetProperty("x").GetInt16();
-            var mainOffsetY = root.GetProperty("offset").GetProperty("y").GetInt16();
-            animInfo = new FrameInfo(mainHeight, mainWidth, mainOffsetX, mainOffsetY);
-            
-            var frameCount = root.GetProperty("frame_count").GetInt16();
-            var framesInfo = root.GetProperty("extra").GetProperty("frames_info");
-            
-            Console.WriteLine($"{frameCount} frames");
-            foreach (var frame in framesInfo.EnumerateArray())
+            try
             {
-                var height = frame.GetProperty("original_height").GetInt16() * 2; //double height sprites
-                var width = frame.GetProperty("original_width").GetInt16();
-                var offsetX = frame.GetProperty("x_offset").GetInt16();
-                var offsetY = frame.GetProperty("y_offset").GetInt16() * 2; //double height sprites
+                var root = meta.RootElement;
                 
-                var info = new FrameInfo(height, width, offsetX, offsetY);
-                frameInfos.Add(info);
-            }
+                var mainHeight = root.GetProperty("size").GetProperty("h").GetInt16();
+                var mainWidth = root.GetProperty("size").GetProperty("w").GetInt16();
+                var mainOffsetX = root.GetProperty("offset").GetProperty("x").GetInt16();
+                var mainOffsetY = root.GetProperty("offset").GetProperty("y").GetInt16();
+                animInfo = new FrameInfo(mainHeight, mainWidth, mainOffsetX, mainOffsetY);
+                
+                var frameCount = root.GetProperty("frame_count").GetInt16();
+                var framesInfo = root.GetProperty("extra").GetProperty("frames_info");
+                
+                Console.WriteLine($"{frameCount} frames");
+                foreach (var frame in framesInfo.EnumerateArray())
+                {
+                    var height = frame.GetProperty("original_height").GetInt16() * 2; //double height sprites
+                    var width = frame.GetProperty("original_width").GetInt16();
+                    var offsetX = frame.GetProperty("x_offset").GetInt16();
+                    var offsetY = frame.GetProperty("y_offset").GetInt16() * 2; //double height sprites
+                    
+                    var info = new FrameInfo(height, width, offsetX, offsetY);
+                    frameInfos.Add(info);
+                }
 
-            if (frameInfos.Count != frameCount)
+                if (frameInfos.Count != frameCount)
+                {
+                    Console.WriteLine($"meta.json: Frame info count ({frameInfos.Count}) does not match frame_count value ({frameCount})!");
+                }
+            }
+            catch (Exception e)
             {
-                Console.WriteLine($"meta.json: Frame info count ({frameInfos.Count}) does not match frame_count value ({frameCount})!");
+                Console.WriteLine($"{dir.Name}: Error while reading meta.json - {e}");
+                return;
             }
         }
 
@@ -105,8 +113,8 @@ internal class Program
         
         Console.WriteLine($"{dir} frames have been cropped.");
 
-        // var appDir = AppContext.BaseDirectory;
-        var appDir = "D:/GameDev/RELIVE/relive_beta_01_06_24/relive_data/ae/animations/_SPRITEPACKER/";
+        var appDir = AppContext.BaseDirectory;
+        //var appDir = "D:/GameDev/RELIVE/relive_beta_01_06_24/relive_data/ae/animations/_SPRITEPACKER/";
 
         foreach (var subDir in Directory.GetParent(appDir).Parent.EnumerateDirectories())
         {

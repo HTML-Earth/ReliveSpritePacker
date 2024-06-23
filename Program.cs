@@ -142,13 +142,14 @@ internal class Program
                     using (var dest = quantizer.QuantizeImage(bitmap, 0,127))
                     {
                         // force alpha values to be 0, 127 or 255
+                        const int fullAlphaThreshold = 127;
                         var newPalette = dest.Palette;
                         for (int i = 0; i < newPalette.Entries.Length; i++)
                         {
                             var col = newPalette.Entries[i];
-                            if (col.A is > 0 and < byte.MaxValue-1)
+                            if (col.A is > 0 and < 255)
                             {
-                                newPalette.Entries[i] = Color.FromArgb(127,col.R,col.G,col.B);
+                                newPalette.Entries[i] = Color.FromArgb(col.A > fullAlphaThreshold ? 255 : 127,col.R,col.G,col.B);
                             }
                         }
 

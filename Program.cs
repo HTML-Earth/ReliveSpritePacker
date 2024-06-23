@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿#pragma warning disable CA1416
+using System.Drawing;
 using System.Drawing.Imaging;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -41,8 +42,8 @@ internal class Program
                 ProcessFolder(new DirectoryInfo(arg));
             }
         }
-        Console.WriteLine("Done.");
-        // Console.Read();
+        Console.WriteLine("Done. Press any key to close.");
+        Console.Read();
     }
 
     static void ProcessFolder(DirectoryInfo dir)
@@ -111,10 +112,9 @@ internal class Program
             rectangles[i].Id = i;
         }
         
-        Console.WriteLine($"{dir} frames have been cropped.");
+        Console.WriteLine($"{dir.Name} frames have been cropped.");
 
         var appDir = AppContext.BaseDirectory;
-        //var appDir = "D:/GameDev/RELIVE/relive_beta_01_06_24/relive_data/ae/animations/_SPRITEPACKER/";
 
         foreach (var subDir in Directory.GetParent(appDir).Parent.EnumerateDirectories())
         {
@@ -137,28 +137,27 @@ internal class Program
                 spriteSheet.Write(fullColorSheetPath);
 
                 var quantizer = new WuQuantizer();
-#pragma warning disable CA1416
                 using(var bitmap = new Bitmap(fullColorSheetPath))
                 {
                     using (var dest = quantizer.QuantizeImage(bitmap, 0,127))
                     {
-                        var pally = dest.Palette;
-                        for (int i = 0; i < pally.Entries.Length; i++)
+                        // force alpha values to be 0, 127 or 255
+                        var newPalette = dest.Palette;
+                        for (int i = 0; i < newPalette.Entries.Length; i++)
                         {
-                            var col = pally.Entries[i];
+                            var col = newPalette.Entries[i];
                             if (col.A is > 0 and < byte.MaxValue-1)
                             {
-                                pally.Entries[i] = Color.FromArgb(128,col.R,col.G,col.B);
+                                newPalette.Entries[i] = Color.FromArgb(127,col.R,col.G,col.B);
                             }
                         }
 
-                        dest.Palette = pally;
+                        dest.Palette = newPalette;
                         dest.Save(indexedSheetPath, ImageFormat.Png);
                     }
                 }
-#pragma warning restore CA1416
                 
-                Console.WriteLine($"{dir} spritesheet has been saved.");
+                Console.WriteLine($"{dir.Name} spritesheet has been saved.");
 
                 if (!File.Exists(jsonBackupPath))
                 {
@@ -177,7 +176,7 @@ internal class Program
                 //JsonSerializer.Serialize(json, new JsonSerializerOptions { WriteIndented = true, IndentSize = 4 }); // .Net 9 only :(
                 File.WriteAllText(jsonPath, json.ToString());
                 
-                Console.WriteLine($"{dir} json has been updated.");
+                Console.WriteLine($"{dir.Name} json has been updated.");
                 break;
             }
         }

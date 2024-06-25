@@ -1,7 +1,3 @@
-# ReliveSpritePacker
-Tool to convert rendered sprites from Blender into spritesheets compatible with RELIVE
-
-## How to use (may change in the future)
 1. Open the Asset Tool and let it extract all of the sprites into "hd/sprites"
 2. Override the extracted sprites with batch rendered sprites from Blender
 3. Run RELIVE to let it extract content as well

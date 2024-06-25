@@ -39,7 +39,18 @@ internal class Program
             Console.WriteLine($"Checking arg: {arg}");
             if (Directory.Exists(arg))
             {
-                ProcessFolder(new DirectoryInfo(arg));
+                if (File.Exists(arg + "/meta.json"))
+                {
+                    ProcessFolder(new DirectoryInfo(arg));
+                }
+                else
+                {
+                    Console.WriteLine("No meta.json found, checking subfolders...");
+                    foreach (var subDir in new DirectoryInfo(arg).GetDirectories())
+                    {
+                        ProcessFolder(subDir);
+                    }
+                }
             }
         }
         Console.WriteLine("Done. Press any key to close.");

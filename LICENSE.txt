@@ -1,0 +1,10 @@
+This build includes binaries of the following libraries:
+
+Magick.NET-Q8-AnyCPU (13.9.1)
+Apache-2.0 license (https://licenses.nuget.org/Apache-2.0)
+
+nQuant (1.0.3)
+APACHE LICENSE, VERSION 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+
+RectpackSharp (1.2.0)
+MIT License (https://licenses.nuget.org/MIT)
